@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<header>
+   <div class="header-logo"></div>
+   <nav class="header-menu">
+     <a href="javascript:void(0);" onclick="configGame();">Configurer et lancer le jeu !!!</a>
+   </nav>
+</header>
+<main class="container"> 
+   <div class="row">
+      <div class="col-md-6">
+          <div id="config-game" class="card element-hidden">
+		<div class="box">
+		   <p style="color: white;">Gamer 1</p>
+		   <div style="display:flex;">
+                        <select name="cars" id="gamer1type" required>
+  				<option value="ordinateur">Ordinateur</option>
+				<option value="humain">Humain</option>
+		   	</select>
+		   	<input type="text" id="gamer1pseudo" placeholder="Pseudo Gamer 1" required>
+		   </div>
+                   <p style="color: white;">Gamer 2</p>
+                   <div style="display:flex;"> 
+		   	<select name="cars" id="gamer2type" required>
+  				<option value="ordinateur">Ordinateur</option>
+				<option value="humain">Humain</option>
+		   	</select>
+                        <input type="text" id="gamer2pseudo" placeholder="Pseudo Gamer 2" required> 
+                   </div>
+                   <input type="submit" onclick="lancerGame();" value="Lancer le jeu !">
+		</div>
+         </div>
+         <div id="game-play" class="card element-hidden">
+		<div class="box">
+		   <p style="color: white;font-weight:bold;">Faites votre jeu<span id="player" style="color:#2ecc71;">Gamer 1</span> !</p>
+                   <p><span id="message-victoire" style="color:red;font-weight:bold;"><span></p>
+		   <div style="display:flex; gap:20px;">
+			<div id="piece_0" onclick="selectPieceGame(this);" class="element-game element-diselected">A</div>
+			<div id="piece_1" onclick="selectPieceGame(this);" class="element-game element-diselected">B</div>
+			<div id="piece_2" onclick="selectPieceGame(this);" class="element-game element-diselected">C</div>
+			<div id="piece_3" onclick="selectPieceGame(this);" class="element-game element-diselected">D</div>
+			<div id="piece_4" onclick="selectPieceGame(this);" class="element-game element-diselected">E</div>
+			<div id="piece_5" onclick="selectPieceGame(this);" class="element-game element-diselected">F</div>
+			<div id="piece_6" onclick="selectPieceGame(this);" class="element-game element-diselected">G</div>
+			<div id="piece_7" onclick="selectPieceGame(this);" class="element-game element-diselected">H</div>
+			<div id="piece_8" onclick="selectPieceGame(this);" class="element-game element-diselected">I</div>
+			<div id="piece_9" onclick="selectPieceGame(this);" class="element-game element-diselected">J</div>
+                        <div id="piece_10" onclick="selectPieceGame(this);" class="element-game element-diselected">K</div>
+                        <div id="piece_11" onclick="selectPieceGame(this);" class="element-game element-diselected">L</div>
+                        <div id="piece_12" onclick="selectPieceGame(this);" class="element-game element-diselected">M</div>
+		   </div>
+		   <div>
+			<input type="submit" onclick="validerGame();" value="Valider !">
+		   </div>
+		</div>
+         </div>
+     </div>
+   </div>
+</main>
+<footer>
+</footer>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+
+        class Gamer{
+            constructor(pseudo, type){
+                this.pseudo = pseudo;
+                this.type = type;
+            }
+        }
+
+        class PieceGame{
+            constructor(played, numero){
+                this.played = played; // la pièce est jouée
+                this.numero = numero;
+                this.played = false;
+                this.selected = false;
+            }
+        }
+
+        let g_Gamers = [];
+        let g_PiecesGame = [];
+        let g_GamerToPlay = -1;
+        const g_numberPiecesGame = 13;
+
+	function lancerGame(){
+           let pseudoGamer1 = document.querySelector("#gamer1pseudo");
+           let typeGamer1 = document.querySelector("#gamer1type");
+           g_Gamers [0] = new Gamer(pseudoGamer1.value, typeGamer1.value);
+
+           let pseudoGamer2 = document.querySelector("#gamer2pseudo");
+           let typeGamer2 = document.querySelector("#gamer2type");
+           g_Gamers [1] = new Gamer(pseudoGamer2.value, typeGamer2.valeur);
+
+           // Détermine aléatoirement le joueur qui démarre
+           g_GamerToPlay = Math.floor(Math.random() * 2);
+           nextPlayer();
+
+           // Créer les pièces
+           for(let i=0; i<g_numberPiecesGame; i++){
+              g_PiecesGame[i] = new PieceGame(false, i);
+           }
+
+           // cacher cette partie de l'écran
+           document.querySelector("#config-game").classList.add("element-hidden");
+           document.querySelector("#game-play").classList.remove("element-hidden");
+        }
+
+        function getIdPieceGame(id_ui){
+           return id_ui.split ("_")[1];
+        }
+
+        function nextPlayer(){
+           let player = document.querySelector("#player");
+           player.innerHTML = g_Gamers [g_GamerToPlay].pseudo; 
+        }
+
+        function selectPieceGame(This){
+           if(This.classList.contains("element-selected")){
+              This.classList.remove("element-selected");
+              This.classList.add("element-diselected");
+
+              g_PiecesGame[getIdPieceGame(This.id)].selected = false;
+
+           }else{
+              This.classList.add("element-selected");
+              This.classList.remove("element-diselected");
+
+              g_PiecesGame[getIdPieceGame(This.id)].selected = true;
+           }
+        }
+
+        function isFinishedGame(){
+           let numberPiecesPlayed = 0;
+           for (let i=0; i<g_PiecesGame.length; i++){
+               if(g_PiecesGame[i].played == true){
+                 numberPiecesPlayed ++;
+               }
+           }
+           if(numberPiecesPlayed == g_numberPiecesGame){
+              return true;
+           }else {
+              return false;
+           }
+        }
+
+        function validerGame(){
+           // vérifier le nombre de pièces sélectionnées
+           let numberPiecesSelected = 0;
+           for (let i=0; i<g_PiecesGame.length; i++){
+               if(g_PiecesGame[i].played == false && g_PiecesGame[i].selected == true){
+                 numberPiecesSelected ++;
+               }
+           }
+           
+           if(numberPiecesSelected >3){
+	       // afficher l'erreur : vous avez sélectionner trop de pièces
+               alert("Erreur : vous avez sélectionner trop de pièces");
+           }else{
+              // Marquer les pièces jouées
+              for (let i=0; i<g_PiecesGame.length; i++){
+                 if(g_PiecesGame[i].played == false && g_PiecesGame[i].selected == true){
+                    g_PiecesGame[i].played = true; // la pièce est jouée, elle ne pourra plus être jouée
+
+                    // cacher la pièce
+                    let piece = document.querySelector("#piece_" + g_PiecesGame[i].numero);
+                    piece.classList.add("element-hidden");
+                 }
+              }  
+              // Le jeu est il terminé
+              if(isFinishedGame()==true){
+                 // annoncer la victoire du précédent joueur qui a joué
+                 let gamerSuccess = -1;
+                 if(g_GamerToPlay == 1){
+                   gamerSuccess = 0;
+                 }else{
+                   gamerSuccess = 1;
+                 }
+                 let victoire = document.querySelector("#message-victoire");
+                 victoire.innerHTML = "Victoire du joueur " + g_Gamers[gamerSuccess].pseudo;
+              }else{
+              	// donne la main à l'autre joueur
+              	if(g_GamerToPlay == 1){
+                   g_GamerToPlay = 0;
+                   nextPlayer(); 
+                }else{
+                   g_GamerToPlay = 1;
+                   nextPlayer();
+                }
+             }
+           }
+        }
+
+        function configGame(){
+           // on remet tout à zéro
+           g_Gamers = [];
+           g_PiecesGame = [];
+           g_GamerToPlay = -1;
+           
+           // on affiche toutes les pièces
+           let pieces = document.querySelectorAll(".element-game");
+ 	   for (let i=0; i<pieces.length; i++){
+               pieces[i].classList.remove("element-selected");
+               pieces[i].classList.remove("element-diselected");
+               pieces[i].classList.remove("element-hidden");
+
+               pieces[i].classList.add("element-diselected");
+           }
+
+           let messvictoire = document.querySelector("#message-victoire");
+           messvictoire .innerHTML = "";
+
+           document.querySelector("#config-game").classList.remove("element-hidden");
+	   document.querySelector("#game-play").classList.remove("element-hidden");
+           document.querySelector("#game-play").classList.add("element-hidden");
+        }
+        
+</script>
+</body>
+</html>
